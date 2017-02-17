@@ -42,7 +42,8 @@
                     var question = questions[this.lang][i];
                     if (sections[this.lang].hasOwnProperty(''+(i+1))){
                         html += '<tr class="section">';
-                        html += '  <td colspan="4" id="section_' + i + '">' + sections[this.lang][''+(i+1)] + '</td>';
+                        html += '  <td colspan="3" id="section_score_' + i + '"></td>';
+                        html += '  <td id="section_' + i + '">' + sections[this.lang][''+(i+1)] + '</td>';
                         html += '</tr>';
                     }
                     html += '<tr id="line_' + i + '">';
@@ -77,13 +78,26 @@
             this.calculateScore = function () {
                 var score = 0;
                 var max = 0;
+                var sectionScore = 0;
+                var sectionMax = 0;
+                var sectionStart = 0;
                 for (var i = 0; i < questions[this.lang].length; i++) {
+                    if (sections[this.lang].hasOwnProperty(''+(i+1))){
+                        document.getElementById('section_score_'+sectionStart).innerHTML = 'Score: '
+                                + sectionScore + '/' + sectionMax + ' (' + Math.round(sectionScore*100/sectionMax) + '%)';
+                        sectionStart = i;
+                        sectionMax = 0;
+                        sectionScore = 0;
+                    }
                     if (document.getElementById('anwser_yes_' + i).checked) {
                         score++;
                         max++;
+                        sectionScore++;
+                        sectionMax++;
                         document.getElementById('line_' + i).className = "yes";
                     } else if (document.getElementById('anwser_no_' + i).checked) {
                         max++;
+                        sectionMax++;
                         document.getElementById('line_' + i).className = "no";
                     } else {
                         document.getElementById('line_' + i).className = "";
@@ -211,8 +225,7 @@
                             + 'This  section  tries  to  figure  out how many places you have done it.<br />'
                             + 'It applies only to those situations in which you were with someone else.<br />',
                     '425': 'Section 11:  Style.  76 questions.'
-                },
-
+                }
             };
             var questions = {
                 'EN': [
@@ -1223,19 +1236,18 @@
         };
         
         function getSearchParameters() {
+            function transformToAssocArray( prmstr ) {
+                var params = {};
+                var prmarr = prmstr.split("&");
+                for ( var i = 0; i < prmarr.length; i++) {
+                    var tmparr = prmarr[i].split("=");
+                    params[tmparr[0]] = tmparr[1];
+                }
+                return params;
+            }
             var prmstr = window.location.search.substr(1);
             return prmstr != null && prmstr != "" ? transformToAssocArray(prmstr) : {};
         }
-        function transformToAssocArray( prmstr ) {
-            var params = {};
-            var prmarr = prmstr.split("&");
-            for ( var i = 0; i < prmarr.length; i++) {
-                var tmparr = prmarr[i].split("=");
-                params[tmparr[0]] = tmparr[1];
-            }
-            return params;
-        }
-        var params = getSearchParameters();
         
         purity.start();
     </script>
@@ -1243,6 +1255,5 @@
     <button onclick="purity.export();">Export</button>
     <button onclick="purity.import();">Import</button>
 
-    window.localStorage.setItem('result', result);
 </body>
 </html>
