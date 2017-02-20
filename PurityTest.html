@@ -103,6 +103,8 @@
                         document.getElementById('line_' + i).className = "";
                     }
                 }
+                document.getElementById('section_score_'+sectionStart).innerHTML = 'Score: '
+                        + sectionScore + '/' + sectionMax + ' (' + Math.round(sectionScore*100/sectionMax) + '%)';
                 document.getElementById('score').innerHTML = 'Score: '
                         + score + '/' + max + ' (' + Math.round(score*100/max) + '%)';
             };
